@@ -16,7 +16,7 @@ def render_predicted(pc : dict,
                      cfg, 
                      scaling_modifier = 1.0, 
                      override_color = None,
-                     focals_pixels = None
+                     focals_pixels = None,
                      render_res = None):
     """
     Render the scene as specified by pc dictionary. 
