@@ -176,10 +176,10 @@ def main(args):
     metricator = Metricator(device)
 
     # precompute novel-view camera matrices
-    from omegaconf import OmegaConf
-    OmegaConf.set_struct(cfg, False)  # cho phép sửa cfg
+    # from omegaconf import OmegaConf
+    # OmegaConf.set_struct(cfg, False)  # cho phép sửa cfg
     cfg.data.fov = args.render_fov
-    
+
     novel_cameras = []
     for elev, azim in NOVEL_VIEW_PARAMS:
         c2w = orbit_camera_opengl(elev, azim, args.render_dist)
