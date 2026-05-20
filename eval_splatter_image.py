@@ -156,7 +156,7 @@ def main(args):
     from gaussian_renderer import render_predicted
 
     model = GaussianSplatPredictor(cfg)
-    ckpt  = torch.load(args.model_path, map_location=device)
+    ckpt  = torch.load(args.model_path, map_location=device, weights_only=False)
     model.load_state_dict(ckpt["model_state_dict"])
     model = model.to(device).eval()
     print("Loaded Splatter Image model.")
