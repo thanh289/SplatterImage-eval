@@ -239,7 +239,8 @@ def main(args):
                 cam["world_view_transform"],
                 cam["full_proj_transform"],
                 cam["camera_center"],
-                bg, cfg, focals_pixels=None
+                bg, cfg, focals_pixels=None,
+                render_res=512
             )["render"]   # [3, H, W]
 
             if vis_dir and obj_idx < args.save_vis:

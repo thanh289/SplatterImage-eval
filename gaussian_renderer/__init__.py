@@ -16,7 +16,8 @@ def render_predicted(pc : dict,
                      cfg, 
                      scaling_modifier = 1.0, 
                      override_color = None,
-                     focals_pixels = None):
+                     focals_pixels = None
+                     render_res = None):
     """
     Render the scene as specified by pc dictionary. 
     
@@ -38,9 +39,13 @@ def render_predicted(pc : dict,
         tanfovy = math.tan(0.5 * focal2fov(focals_pixels[1].item(), cfg.data.training_resolution))
 
     # Set up rasterization configuration
+
+    _res = render_res if render_res is not None else int(cfg.data.training_resolution)
+
+
     raster_settings = GaussianRasterizationSettings(
-        image_height=int(cfg.data.training_resolution),
-        image_width=int(cfg.data.training_resolution),
+        image_height=_res,
+        image_width=_res,
         tanfovx=tanfovx,
         tanfovy=tanfovy,
         bg=bg_color,
