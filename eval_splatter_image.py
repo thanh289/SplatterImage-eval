@@ -115,14 +115,17 @@ class Metricator:
 
     @torch.no_grad()
     def compute(self, pred, gt):
-        """pred, gt: [3, H, W] float in [0,1]."""
-        mse   = torch.mean((pred - gt) ** 2)
-        psnr  = -10 * torch.log10(mse + 1e-8).item()
+        mse  = torch.mean((pred - gt) ** 2)
+        psnr = -10 * torch.log10(mse + 1e-8).item()
         from utils.loss_utils import ssim as ssim_fn
-        ssim  = ssim_fn(pred, gt).item()
+        ssim = ssim_fn(pred, gt).item()
+        
+        import torch.nn.functional as F
+        pred_256 = F.interpolate(pred.unsqueeze(0), (256, 256), mode='bilinear', align_corners=False)
+        gt_256   = F.interpolate(gt.unsqueeze(0),   (256, 256), mode='bilinear', align_corners=False)
         lpips = self.lpips_net(
-            pred.unsqueeze(0) * 2 - 1,
-            gt.unsqueeze(0)   * 2 - 1
+            pred_256 * 2 - 1,
+            gt_256   * 2 - 1
         ).item()
         return psnr, ssim, lpips
 
@@ -253,7 +256,7 @@ def main(args):
 
             gt_pil = Image.open(gt_path).convert("RGBA")
             gt_pil = torchvision.transforms.functional.resize(
-                gt_pil, res,
+                gt_pil, 512,
                 interpolation=torchvision.transforms.InterpolationMode.LANCZOS
             )
             gt_t   = torchvision.transforms.functional.pil_to_tensor(gt_pil) / 255.0
