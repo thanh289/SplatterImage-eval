@@ -81,7 +81,7 @@ def render_predicted(pc : dict,
         colors_precomp = override_color
 
     # Rasterize visible Gaussians to image, obtain their radii (on screen). 
-    rendered_image, radii = rasterizer(
+    render_output = rasterizer(
         means3D = means3D,
         means2D = means2D,
         shs = shs,
@@ -90,6 +90,9 @@ def render_predicted(pc : dict,
         scales = scales,
         rotations = rotations,
         cov3D_precomp = cov3D_precomp)
+
+    rendered_image = render_output[0]
+    radii = render_output[1]
 
     # Those Gaussians that were frustum culled or had a radius of 0 were not visible.
     # They will be excluded from value updates used in the splitting criteria.
