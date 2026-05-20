@@ -171,17 +171,22 @@ def main(args):
     dist  = 2.0
 
     proj_mat = get_projection_matrix(znear, zfar, fov).to(device)
+    render_proj_mat = get_projection_matrix(znear, zfar, args.render_fov).to(device)
     bg       = torch.tensor([1., 1., 1.], dtype=torch.float32, device=device)
     metricator = Metricator(device)
 
     # precompute novel-view camera matrices
+    from omegaconf import OmegaConf
+    OmegaConf.set_struct(cfg, False)  # cho phép sửa cfg
+    cfg.data.fov = args.render_fov
+    
     novel_cameras = []
     for elev, azim in NOVEL_VIEW_PARAMS:
-        c2w = orbit_camera_opengl(elev, azim, dist)
+        c2w = orbit_camera_opengl(elev, azim, args.render_dist)
         wvt, vwt, cc = c2w_to_splatter(c2w)
         novel_cameras.append({
             "world_view_transform": wvt.to(device),
-            "full_proj_transform":  (wvt.to(device) @ proj_mat),
+            "full_proj_transform":  (wvt.to(device) @ render_proj_mat),
             "camera_center":        cc.to(device),
         })
 
@@ -318,5 +323,7 @@ if __name__ == "__main__":
     parser.add_argument("--output_dir",  default=None)
     parser.add_argument("--save_vis",    type=int, default=0,
                         help="How many objects to save renders for")
+    parser.add_argument("--render_fov",  type=float, default=60.0)
+    parser.add_argument("--render_dist", type=float, default=1.5)
     args = parser.parse_args()
     main(args)
